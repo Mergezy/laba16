@@ -1,56 +1,61 @@
 import java.util.Scanner;
-
-interface Operation {
-    boolean isEqual(int n, int m);
-}
-
-class OperationSort{
-    static boolean sortAscend(int n, int m){
-        return n < m;
-    }
-    static boolean sortDescend(int n, int m){
-        return n > m;
-    }
+interface Condition {
+    boolean check(int x, int y);
 }
 
 public class Main {
-
-    public static void selectionSort(int[] sortArr, Operation Sort) {
-        for (int i = 0; i < sortArr.length; i++) {
-            int num_id = i;
-            int num = sortArr[i];
-            for (int j = i + 1; j < sortArr.length; j++) {
-                if (Sort.isEqual(sortArr[j],num)) {
-                    num_id = j;
-                    num = sortArr[j];
-                }
-            }
-            sortArr[num_id] = sortArr[i];
-            sortArr[i] = num;
+    static Scanner scanner = new Scanner(System.in);
+    static Condition less = (x, y) -> x < y;
+    static Condition grow = (x, y) -> x > y;
+    public static void get_change(int[] arr) {
+        System.out.println("Укажите порядок сортировки");
+        System.out.println("1 по возрастанию\n2 по убыванию");
+        int change = scanner.nextInt();
+        if (change == 1) {
+            combSort(arr, grow);
+        } else if (change == 2) {
+            combSort(arr, less);
+        } else {
+            get_change(arr);
+        }
+    }
+    public static void main(String[] args) {
+        System.out.print("Введите размер массива: ");
+        int size = scanner.nextInt();
+        int[] arr = new int[size];
+        System.out.print("Введите элементы массива: \n");
+        for (int i = 0; i < size; i++) {
+            arr[i] = scanner.nextInt();
+        }
+        get_change(arr);
+        System.out.print("Отсортированный массив: ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(arr[i] + " ");
         }
     }
 
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        System.out.print("Введите размер массива: ");
-        int[] nums = new int[in.nextInt()];
-        for (int i = 0; i < nums.length; i++){
-            System.out.printf("Введите %d элемент: ", i + 1);
-            nums[i] = in.nextInt();
-        }
-        System.out.println("Выберите вид сортировки: \n1) по возрастанию \n2) по убыванию");
-        int input = in.nextInt();
-        if (input == 1){
-            selectionSort(nums, OperationSort::sortAscend);
-        }
-        else if (input == 2){
-            selectionSort(nums, OperationSort::sortDescend);
-        }
-        else{
-            System.out.println("Ошибка");
-        }
-        for (int j : nums) {
-            System.out.print(j + " ");
+    public static void combSort(int[] arr, Condition condition) {
+        int n = arr.length;
+        int step = n;
+        double factor = 1.247;
+        boolean sorted = false;
+
+        while (!sorted) {
+            step = (int) Math.floor(step / factor);
+            if (step <= 1) {
+                step = 1;
+                sorted = true;
+            }
+            int i = 0;
+            while (i + step < n) {
+                if (condition.check(arr[i], arr[i + step])) {
+                    int temp = arr[i];
+                    arr[i] = arr[i + step];
+                    arr[i + step] = temp;
+                    sorted = false;
+                }
+                i++;
+            }
         }
     }
 }
